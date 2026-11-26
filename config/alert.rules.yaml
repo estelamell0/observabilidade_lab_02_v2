@@ -1,0 +1,24 @@
+groups:
+  - name: esteira
+    rules:
+      - alert: AltaTaxaDeFalhaPipeline
+        expr: |
+          sum(pipeline_runs_total{status="failed"})
+            / sum(pipeline_runs_total) > 0.2
+        for: 1m
+        labels:
+          severity: warning
+          team: plataforma
+        annotations:
+          summary: "Taxa de falha do pipeline acima de 20%"
+          runbook_url: "https://wiki.corp/runbooks/pipeline-falha"
+
+      - alert: DeploySemCoberturaDeGate
+        expr: |
+          sum(deploy_total{env="prod",gate_executed="false"}) > 0
+        for: 0m
+        labels:
+          severity: critical
+          compliance: "true"
+        annotations:
+          summary: "Deploy em PROD sem gate de seguranca executado"
